@@ -1,0 +1,40 @@
+.wrap-form{
+    width: 300px;
+    height: 386px;
+    margin: auto;
+    background: #f3ecec;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    margin-top: 70px;
+}
+.button-register{
+    margin-top: 20px !important;
+}
+.button-upload{
+    width: 60px;
+    margin-left: 60px !important;
+    margin-bottom: 20px !important;
+    
+}
+.MuiFormHelperText-root-89{
+    color: red !important;
+}
+.card-body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.dropdown{
+    margin-right: -17px !important;
+    opacity: 0;
+}
+.card-title{
+    width: 100% !important;
+}
+.card:hover .dropdown{
+    opacity: 1;
+
+}
+.dropdown a{
+    cursor: pointer;
+}
