@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 class ContentHead extends Component {
     render() {
+      console.log(this.props.userInfo);
+      
         return (
             <div>
                 <div className="d-sm-flex align-items-center justify-content-between mb-4">
@@ -18,8 +20,8 @@ class ContentHead extends Component {
                   <div className="card-body">
                     <div className="row no-gutters align-items-center">
                       <div className="col mr-2">
-                        <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">Earnings (Monthly)</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                        <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">Storage</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">{this.props.userInfor.size}G/5G</div>
                       </div>
                       <div className="col-auto">
                         <i className="fas fa-calendar fa-2x text-gray-300"></i>
@@ -35,11 +37,11 @@ class ContentHead extends Component {
                   <div className="card-body">
                     <div className="row no-gutters align-items-center">
                       <div className="col mr-2">
-                        <div className="text-xs font-weight-bold text-success text-uppercase mb-1">Earnings (Annual)</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                        <div className="text-xs font-weight-bold text-success text-uppercase mb-1">Items</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">{this.props.countItem}</div>
                       </div>
                       <div className="col-auto">
-                        <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        <i className="fas fa-clipboard-list fa-2x text-gray-300"></i>
                       </div>
                     </div>
                   </div>

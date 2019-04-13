@@ -1,28 +1,137 @@
 import React, { Component } from 'react';
+import SweetAlert from 'react-bootstrap-sweetalert';
+import axios from 'axios';
+
+
+
 
 class ContentItem extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showEdit: false,
+            oldName: ''
+        }
+
+    }
+
+
+    getType(type, filename) {
+        switch (type) {
+            case '.pdf':
+                return 'http://www.mersin.edu.tr/img/yeni-pano-iconlari/pdf.png';
+
+            case '.doc':
+                return 'http://icons.iconarchive.com/icons/dakirby309/simply-styled/256/Microsoft-Word-2013-icon.png';
+
+            case '.zip':
+                return 'https://cdn.iconscout.com/icon/free/png-256/zip-file-format-489644.png';
+
+            case '.xlsx':
+                return 'https://cdn1.iconfinder.com/data/icons/application-file-formats/128/microsoft-excel-512.png';
+
+            case '.png':
+                return filename;
+
+            case '.PNG':
+                return filename;
+
+            case '.jpg':
+                return filename;
+
+            case '.rar':
+                return 'https://www.shareicon.net/download/2016/01/29/269354_rar_256x256.png';
+
+            default:
+                return "https://blog.macsales.com/wp-content/uploads/2017/12/finder-icon.png";
+
+        }
+    }
+
+    onDeleteFile = () => {
+        this.props.onDeleteFile(this.props.idFile);
+    }
+    onDownloadFile = () => {
+        this.props.onDownloadFile(this.props.idFile);
+    }
+    onEditName = (name) => {
+        this.setState(state => {
+            return {
+                showEdit: true
+            }
+        });
+    }
+
+    onCancel = () => {
+        this.setState({
+            showEdit: false
+        });
+    }
+    onRecieveInput = (value) => {
+        let filename = value
+        axios({
+            method: 'put',
+            url: '/file/editfilename/' + this.props.idFile,
+            data: { filename }
+        })
+            .then(res => {
+                console.log(res.data.status)
+                if(res.data.status){
+                    this.setState({
+                        showEdit: false
+                    });
+                }
+
+            }).catch(err => {
+                console.log(err);
+
+            });
+
+    }
+
     render() {
+
+        let { file } = this.props;
+        console.log(file);
+        console.log('ra');
+        console.log(this.state);
+
+
+        let type = this.getType(file.type, file.url);
         return (
 
 
 
-            <div className="col-md-2">
-                <div class="card">
-                    <img class="card-img-top" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22286%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20286%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_16991634748%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_16991634748%22%3E%3Crect%20width%3D%22286%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22107.1953125%22%20y%3D%2296.2390625%22%3E286x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Card image cap" />
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <div class="dropdown">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <div className="col-md-2" style={{ 'marginTop': '10px' }}>
+                <div className="card">
+                    <img className="card-img-top" src={type} alt="Card image cap" width="50%" />
+                    <div className="card-body">
+                        <h5 className="card-title">{file.filename}</h5>
+                        <div className="dropdown">
+                            <button type="button" className="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                 ...
-    </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item">Download</a>
-                                <a class="dropdown-item">Delete</a>
-                            
+                            </button>
+                            <div className="dropdown-menu">
+                                <a href={`http://localhost:3001/${file.url}`} target="_blank" className="dropdown-item">Download</a>
+                                <a className="dropdown-item" onClick={this.onDeleteFile}>Delete</a>
+                                <a className="dropdown-item" onClick={() => this.onEditName(file.filename)}>Edit Name</a>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                <SweetAlert
+                    input
+                    inputType="text"
+                    defaultValue={file.filename}
+                    showCancel
+                    show={this.state.showEdit}
+                    cancelBtnBsStyle="default"
+                    title="Enter Name"
+                    placeHolder="Write something"
+                    onConfirm={this.onRecieveInput}
+                    onCancel={this.onCancel}
+                />
             </div>
 
         );

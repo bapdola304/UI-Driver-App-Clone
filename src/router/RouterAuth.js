@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import {Router, Route, Link,Switch } from "react-router-dom";
-import Login from '../components/Login';
-import Register from '../components/Register';
+import {BrowserRouter as Router, Route, Link,Switch } from "react-router-dom";
+import UserManager from '../components/UserManager';
+import Content from '../components/Content';
 
 class RouterAuth extends Component {
     render() {
         return (
-           
                 <div>
-                <Route exact  path="/login" component={Login}/>
-                <Route path="/register" component={Register}/>
+                    <Route  path="/" component={() => <Content listFiles = {this.props.listFiles}  onDeleteFile = {this.props.onDeleteFile} />}/>
+                    <Route  path="/user" component={UserManager}/>
                 </div>
-         
         );
     }
 }
