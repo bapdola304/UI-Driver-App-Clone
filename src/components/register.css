@@ -12,7 +12,7 @@
 }
 .button-upload{
     width: 60px;
-    margin-left: 60px !important;
+    margin-left: 18px !important;
     margin-bottom: 20px !important;
     
 }
@@ -54,7 +54,7 @@
     width: 100% !important;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+/* @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 
 
 h1 {
@@ -267,4 +267,4 @@ input {
 	margin: 0 5px;
 	height: 40px;
 	width: 40px;
-}
+} */

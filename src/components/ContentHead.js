@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
-
 class ContentHead extends Component {
-    render() {
-      console.log(this.props.userInfo);
-      
+  constructor(props) {
+    super(props);
+    this.state = {
+        size : 0
+    }
+}
+  componentWillReceiveProps(props){
+    console.log(props.userInfor);
+    this.setState({
+      size : props.userInfor.size
+    });
+  }
+    render() { 
         return (
             <div>
                 <div className="d-sm-flex align-items-center justify-content-between mb-4">
@@ -21,7 +30,7 @@ class ContentHead extends Component {
                     <div className="row no-gutters align-items-center">
                       <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">Storage</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">{this.props.userInfor.size}G/5G</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">{this.state.size}G/5G</div>
                       </div>
                       <div className="col-auto">
                         <i className="fas fa-calendar fa-2x text-gray-300"></i>
@@ -97,4 +106,4 @@ class ContentHead extends Component {
     }
 }
 
-export default ContentHead;
+export default (ContentHead);

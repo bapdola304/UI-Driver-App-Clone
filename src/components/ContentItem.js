@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import axios from 'axios';
-
+import { deleteFile, editFileName } from "../actions/index";
+import { connect } from "react-redux";
 
 
 
@@ -49,10 +50,7 @@ class ContentItem extends Component {
     }
 
     onDeleteFile = () => {
-        this.props.onDeleteFile(this.props.idFile);
-    }
-    onDownloadFile = () => {
-        this.props.onDownloadFile(this.props.idFile);
+        this.props.deleteFile(this.props.idFile);
     }
     onEditName = (name) => {
         this.setState(state => {
@@ -68,35 +66,31 @@ class ContentItem extends Component {
         });
     }
     onRecieveInput = (value) => {
-        let filename = value
-        axios({
-            method: 'put',
-            url: '/file/editfilename/' + this.props.idFile,
-            data: { filename }
-        })
-            .then(res => {
-                console.log(res.data.status)
-                if(res.data.status){
-                    this.setState({
-                        showEdit: false
-                    });
-                }
+        this.props.editFileName(this.props.idFile, value)
+        // let filename = value
+        // axios({
+        //     method: 'put',
+        //     url: '/file/editfilename/' + this.props.idFile,
+        //     data: { filename }
+        // })
+        //     .then(res => {
+        //         console.log(res.data.status)
+        //         if(res.data.status){
+        //             this.setState({
+        //                 showEdit: false
+        //             });
+        //         }
 
-            }).catch(err => {
-                console.log(err);
+        //     }).catch(err => {
+        //         console.log(err);
 
-            });
+        //     });
 
     }
 
     render() {
 
         let { file } = this.props;
-        console.log(file);
-        console.log('ra');
-        console.log(this.state);
-
-
         let type = this.getType(file.type, file.url);
         return (
 
@@ -138,4 +132,4 @@ class ContentItem extends Component {
     }
 }
 
-export default ContentItem;
+export default connect(null, { deleteFile, editFileName })(ContentItem);
