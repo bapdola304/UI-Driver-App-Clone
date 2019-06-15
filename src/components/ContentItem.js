@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import axios from 'axios';
 import { deleteFile, editFileName } from "../actions/index";
 import { connect } from "react-redux";
-
+import { Popconfirm } from 'antd';
 
 
 class ContentItem extends Component {
@@ -49,9 +48,6 @@ class ContentItem extends Component {
         }
     }
 
-    onDeleteFile = () => {
-        this.props.deleteFile(this.props.idFile);
-    }
     onEditName = (name) => {
         this.setState(state => {
             return {
@@ -87,6 +83,9 @@ class ContentItem extends Component {
         //     });
 
     }
+    confirm = () =>{
+        this.props.deleteFile(this.props.idFile);
+    }
 
     render() {
 
@@ -97,7 +96,7 @@ class ContentItem extends Component {
 
 
             <div className="col-md-2" style={{ 'marginTop': '10px' }}>
-                <div className="card">
+                <div className="card card1">
                     <img className="card-img-top" src={type} alt="Card image cap" width="50%" />
                     <div className="card-body">
                         <h5 className="card-title">{file.filename}</h5>
@@ -107,7 +106,10 @@ class ContentItem extends Component {
                             </button>
                             <div className="dropdown-menu">
                                 <a href={`http://localhost:3001/${file.url}`} target="_blank" className="dropdown-item">Download</a>
-                                <a className="dropdown-item" onClick={this.onDeleteFile}>Delete</a>
+                                <Popconfirm placement="top" title="Are you delete ?" onConfirm={this.confirm} okText="Yes" cancelText="No">
+                                <a className="dropdown-item">Delete</a>
+                                </Popconfirm>
+                               
                                 <a className="dropdown-item" onClick={() => this.onEditName(file.filename)}>Edit Name</a>
 
                             </div>

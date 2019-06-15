@@ -1,30 +1,59 @@
 import React, { Component } from 'react';
 
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+// import TextField from '@material-ui/core/TextField';
+// import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { message } from "antd";
-
+import { Form, Icon, Input, Button, Checkbox } from "antd";
+import { loginUser } from "../actions/authLogin";
+import { connect } from "react-redux";
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
             un: '',
             pw: '',
-            name : '',
+            name: '',
             showForm: false,
             loading: false
         }
 
     }
 
-    handleChange = (event) => {
+    handleSubmit = e => {
+        e.preventDefault();
+        let userData = {
+            username : this.state.un,
+            password : this.state.pw
+        }
         this.setState({
-            [event.target.name]: event.target.value
+            loading: true
         });
+        this.props.loginUser(userData)
+    };
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+
+        if (nextProps.auth.isAuthenticated) {
+            this.setState({
+                loading: false
+            });
+            this.props.history.push('/db')
+        } else {
+            message.error('Username or Password Wrong!');
+            this.setState({
+                loading: false
+            })
+        }
     }
-    handleSubmit = (event) => {
+    handleChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+
+    }
+    handleSubmit2 = (event) => {
         let { un, pw } = this.state;
         event.preventDefault();
         console.log(this.state)
@@ -55,144 +84,104 @@ class Login extends Component {
             // this.props.history.push('/login')
         });
     }
-    showFormSignUp = () => {
-        console.log('aaa');
 
-        this.setState({
-            showForm: !this.state.showForm
-        }, () => console.log(this.state.showForm)
-        );
-    }
-    handleSubmitSignUp = (e) =>{
-        let {un, pw} = this.state;
-        e.preventDefault();
-        axios({
-            method: 'post',
-            url: '/user',
-            data: { un, pw }
-        }).then(res => {
-            console.log(res)
-            if(res.data.status){
-                this.setState({
-                    un : '',
-                    pw : '',
-                    name : ''
-                });
-                setTimeout(() =>{
-                   this.setState({
-                    showForm : !this.state.showForm
-                   });
-                },2000)
-               return  message.success('Sign Up Success!');
-            }
-            message.error(res.data.message);
-            
-        }).catch(err => {
-            console.log('sai');
 
-            this.setState({
-                loading: false
-            });
-            // this.props.history.push('/login')
-        });
-        
-    }
-    handleChangeSignUp = (e) =>{
-        this.setState({
-            [e.target.name] : e.target.value
-        });
-    }
 
     render() {
+        const { getFieldDecorator } = this.props.form;
         return (
-            <div className="wrap-form">
-                <form onSubmit = {this.handleSubmit}>
-                    <h1>Login</h1>
-                    <div className="input-form" >
-                        <TextField
-                            id="filled-name-input"
-                            label="Username"
-                            className=""
-                            type="text"
-                            name="un"
-                            autoComplete="text"
-                            margin="normal"
-                            variant="filled"
-                            onChange = {this.handleChange}
-                            value = {this.state.un}
-                        />
-                    </div>
-                    <div className="input-form" >
-                        <TextField
-                            id="filled-password-input"
-                            label="Password"
-                            className=""
-                            name="pw"
-                            type="password"
-                            autoComplete="current-password"
-                            margin="normal"
-                            variant="filled"
-                            onChange = {this.handleChange}
-                            value = {this.state.pw}
-                        />
-                    </div>
-                    <Button variant="contained" color="primary" className="button-register" type="submit">
-                        Submit
-                    </Button>
-                    <Link to="register">
-                        <p>Register</p>
-                    </Link>
-                </form>
-            </div>
-            // <div className={this.state.showForm ? 'container right-panel-active' : 'container'} id="container" style={{ marginTop: '60px' }}>
-            //     <div className="form-container sign-up-container">
-            //         <form onSubmit={this.handleSubmitSignUp}>
-            //             <h1>Create Account</h1>
-            //             <div className="social-container">
-            //                 <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
-            //                 <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
-            //                 <a href="#" className="social"><i className="fab fa-linkedin-in"></i></a>
-            //             </div>
-            //             <span>or use your email for registration</span>
-            //             <input type="text" placeholder="Name" name="name" onChange={this.handleChangeSignUp} value={this.state.name}/>
-            //             <input type="text" placeholder="UserName" name="un" onChange={this.handleChangeSignUp} value={this.state.un}/>
-            //             <input type="password" placeholder="Password" name="pw" onChange={this.handleChangeSignUp} value={this.state.pw} />
-            //             <button>Sign Up {this.state.loading ? <Spin /> : ""}</button>
-            //         </form>
-            //     </div>
-            //     <div className="form-container sign-in-container">
-            //         <form onSubmit={this.handleSubmit}>
-            //             <h1>Sign in</h1>
-            //             <div className="social-container">
-            //                 <a href="#" className="social"><i className="fab fa-facebook-f"></i></a>
-            //                 <a href="#" className="social"><i className="fab fa-google-plus-g"></i></a>
-            //                 <a href="#" className="social"><i className="fab fa-linkedin-in"></i></a>
-            //             </div>
-            //             <span>or use your account</span>
-            //             <input type="text" placeholder="UserName" name="un" onChange={this.handleChange} />
-            //             <input type="password" placeholder="Password" name="pw" onChange={this.handleChange} />
-            //             <a href="#">Forgot your password?</a>
-            //             <button>Sign In {this.state.loading ? <Spin /> : ""}</button>
+            <Form onSubmit={this.handleSubmit} className="login-form">
+                <Form.Item>
 
-            //         </form>
-            //     </div>
-            //     <div className="overlay-container">
-            //         <div className="overlay">
-            //             <div className="overlay-panel overlay-left">
-            //                 <h1>Welcome Back!</h1>
-            //                 <p>To keep connected with us please login with your personal info</p>
-            //                 <button className="ghost" onClick={this.showFormSignUp}>Sign In</button>
-            //             </div>
-            //             <div className="overlay-panel overlay-right">
-            //                 <h1>Hello, Friend!</h1>
-            //                 <p>Enter your personal details and start journey with us</p>
-            //                 <button className="ghost" onClick={this.showFormSignUp}>Sign Up</button>
-            //             </div>
-            //         </div>
-            //     </div>
-            // </div>
+                    <Input
+                        name="un"
+                        onChange={this.handleChange}
+                        prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
+                        placeholder="Username"
+                    />
+
+                </Form.Item>
+                <Form.Item>
+
+                    <Input
+                        name="pw"
+                        onChange={this.handleChange}
+                        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
+                        type="password"
+                        placeholder="Password"
+                    />
+
+                </Form.Item>
+                <Form.Item>
+                    {getFieldDecorator("remember", {
+                        valuePropName: "checked",
+                        initialValue: true
+                    })(<Checkbox>Remember me</Checkbox>)}
+                    <a className="login-form-forgot" href="">
+                        Forgot password
+          </a>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        className="login-form-button"
+                        loading={this.state.loading}
+                    >
+                        {!this.state.loading ? <Icon type="login" /> : ""}
+                        Log in
+          </Button>
+                    Or <Link to="/register">register now!</Link>
+                </Form.Item>
+            </Form>
         );
     }
+    // return (
+    //     <div className="wrap-form">
+    //         <form onSubmit = {this.handleSubmit}>
+    //             <h1>Login</h1>
+    //             <div className="input-form" >
+    //                 <TextField
+    //                     id="filled-name-input"
+    //                     label="Username"
+    //                     className=""
+    //                     type="text"
+    //                     name="un"
+    //                     autoComplete="text"
+    //                     margin="normal"
+    //                     variant="filled"
+    //                     onChange = {this.handleChange}
+    //                     value = {this.state.un}
+    //                 />
+    //             </div>
+    //             <div className="input-form" >
+    //                 <TextField
+    //                     id="filled-password-input"
+    //                     label="Password"
+    //                     className=""
+    //                     name="pw"
+    //                     type="password"
+    //                     autoComplete="current-password"
+    //                     margin="normal"
+    //                     variant="filled"
+    //                     onChange = {this.handleChange}
+    //                     value = {this.state.pw}
+    //                 />
+    //             </div>
+    //             <Button variant="contained" color="primary" className="button-register" type="submit">
+    //                 Submit
+    //             </Button>
+    //             <Link to="register">
+    //                 <p>Register</p>
+    //             </Link>
+    //         </form>
+    //     </div>
+    // );
 }
-
-export default withRouter(Login);
+const WrappedNormalLoginForm = Form.create({ name: "normal_login" })(
+    Login
+);
+const mapStateToProps = state => {
+    return {
+        auth: state.authLogin
+    }
+}
+export default connect(mapStateToProps, { loginUser })(withRouter(WrappedNormalLoginForm));

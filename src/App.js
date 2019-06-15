@@ -8,13 +8,21 @@ import { createStore, applyMiddleware } from "redux";
 import myReducer from "./reducers/index";
 import { Provider } from "react-redux";
 import thunk from 'redux-thunk';
+import axios from 'axios';
 const store = createStore(myReducer, applyMiddleware(thunk));
 
 
 
 class App extends Component {
+  getToken() {
+    if (localStorage.getItem('token')) {
+        var token = `Token ${localStorage.getItem('token')}`;
+        console.log(token)
+    }
+    axios.defaults.headers.common['Authorization'] = token;
+}
   render() {
-    console.log(routes);
+    this.getToken()
     
     return (
       <Provider store = {store}>

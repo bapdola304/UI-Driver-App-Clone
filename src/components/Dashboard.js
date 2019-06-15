@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
 import MenuSidebar from './MenuSidebar';
 import Header from './Header';
-import axios from 'axios';
 import { withRouter, Route } from "react-router-dom";
 import { actFetchFiles } from "../actions/index";
 import { connect } from "react-redux";
-
 class Dashboard extends Component {
 
-    getToken() {
-        if (localStorage.getItem('token')) {
-            var token = `Token ${localStorage.getItem('token')}`;
-            console.log(token)
-        }
-        axios.defaults.headers.common['Authorization'] = token;
-    }
     componentWillMount() {
-        this.getToken();
-        this.props.actFetchFiles()   
-    }
-    onLogout = () => {
-        localStorage.removeItem('token');
-        this.componentWillMount();
+        if(!localStorage.getItem('token')){
+            this.props.history.push('/login')
+        }
+        this.props.actFetchFiles(this.props.history)
     }
 
+    componentWillReceiveProps(props){
+        if(props.status == false){
+            this.props.history.push('/login')
+        }
+        
+    }
     RouteWithSubRoutes = (route) => {
         return (
             <Route
@@ -31,10 +26,10 @@ class Dashboard extends Component {
                 path={route.path}
                 component={(props) => (
                     // pass the sub-routes down to keep nesting
-                    <route.component {...props} 
-                        routes={route.routes} 
-                        userInfor={this.props.userInfor.userInfor}
-                     />
+                    <route.component {...props}
+                        routes={route.routes}
+                        userInfor={this.props.userInfor}
+                    />
                 )}
             />
         );
@@ -42,10 +37,12 @@ class Dashboard extends Component {
 
 
     render() {
+        console.log(this.props.userInfor);
+        
         return (
             <div id="wrapper">
 
-                <MenuSidebar  onLogout={this.onLogout}/>
+                <MenuSidebar uploadStatus = {this.props.status} user = {this.props.userInfor}/>
                 <div id="content-wrapper" className="d-flex flex-column">
                     <div id="content">
                         <Header />
@@ -63,9 +60,11 @@ class Dashboard extends Component {
     }
 }
 
-const mapStateToProps = state =>{
+const mapStateToProps = state => {
     return {
-        userInfor : state.listFile
+        status : state.listFile.status,
+        auth: state.authLogin,
+        userInfor: state.listFile.userInfor
     }
 }
 // const mapDispatchToProps = (dispatch, props) => {
@@ -78,4 +77,4 @@ const mapStateToProps = state =>{
 //         }
 //     };
 //   };
-export default connect(mapStateToProps, {actFetchFiles})(withRouter(Dashboard));
+export default connect(mapStateToProps, { actFetchFiles })(withRouter(Dashboard));

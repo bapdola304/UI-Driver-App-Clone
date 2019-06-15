@@ -1,161 +1,116 @@
 import React, { Component } from 'react';
 import './register.css';
-
+import { Form, Icon, Input, Button, message } from "antd";
 import axios from 'axios';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+// import TextField from '@material-ui/core/TextField';
+// import Button from '@material-ui/core/Button';
 import { Link } from "react-router-dom";
 
 class Register extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            un : '',
-            pw : '',
-            pw2 : '',
+            un: '',
+            pw: '',
+            pw2: '',
             unError: "",
             pwError: "",
             pw2Error: ""
         }
-        
+
     }
 
-    validate = () => {
-        let isError = false;
-        const errors = {
-          unError: "",
-          pwError: "",
-          pw2Error: ""
-        };
-        if (this.state.un === '') {
-            isError = true;
-            errors.unError = "Username not null";
-          }
-          if (this.state.pw === '') {
-            isError = true;
-            errors.pwError = "Password not null";
-          }
-        //   if (this.state.pw2 === '') {
-        //     isError = true;
-        //     errors.pw2Error = "Password not null";
-        //   }
-        // if (this.state.un.length < 5) {
-        //   isError = true;
-        //   errors.usernameError = "Username > 5 characters";
-        // }
-    
-        // if (this.state.pw.length < 5) {
-        //     isError = true;
-        //     errors.pwError = "Password > 5 characters";
-        // }
 
-        if (this.state.pw !== this.state.pw2) {
-            isError = true;
-            errors.pw2Error = "Confirm Password Fail";
-        }
-      
-    
+    handleChange = (e) => {
         this.setState({
-          ...this.state,
-          ...errors
-        });
-    
-        return isError;
-      };
-
-    handleChange= (e) =>{
-        this.setState({
-            [e.target.name] : e.target.value
+            [e.target.name]: e.target.value
         });
     }
-    handleSubmit = (e) =>{
-        let { un, pw } = this.state;
+    handleSubmit = (e) => {
+        let { un, pw, pw2 } = this.state;
         e.preventDefault();
-        const err = this.validate();
-        if (!err) {
-        //   clear form
-          this.setState({
-            un : '',
-            pw : '',
-            pw2 : '',
-            unError: "",
-            pwError: "",
-            pw2Error: ""
-          });
-          axios({
-            method:'post',
-            url:'/user',
-            data : {un, pw}
-          })
-            .then( res => {
-                console.log(res)
-        });
+
+        if(pw === '' || un === '' || pw2 === ''){
+            return message.error('Please fillout form!');
+        }
+        if(pw2 !== pw){
+            return message.error('Confirm password fail!');
+        }
+            //   clear form
+            axios({
+                method: 'post',
+                url: '/user',
+                data: { un, pw }
+            })
+                .then(res => {
+                    if(res.data.status){
+                        this.setState({
+                            un: '',
+                            pw: '',
+                            pw2: '',
+                        });
+                        return message.success(res.data.message, 4);
+                    }
+                    return message.error(res.data.message);
+                });
+        
+
+
+
     }
-
- 
-
-}
 
 
     render() {
         return (
-            <div className="wrap-form">
-                <form onSubmit = {this.handleSubmit} autoComplete="on" >
-                    <h1>Register</h1>
-                    <div className="input-form" >
-                        <TextField
-                            id="filled-name-input"
-                            label="Username"
-                            className=""
-                            type="text"
-                            name="un"
-                            autoComplete="text"
-                            margin="normal"
-                            variant="filled"
-                            onChange = {this.handleChange}
-                            value = {this.state.un}
-                            helperText={this.state.unError}
-                        />
-                    </div>
-                    <div className="input-form" >
-                        <TextField
-                            
-                            id="filled-password-input"
-                            label="Password"
-                            className=""
-                            type="password"
-                            name="pw"
-                            autoComplete="current-password"
-                            margin="normal"
-                            variant="filled"
-                            onChange = {this.handleChange}
-                            value = {this.state.pw}
-                            helperText={this.state.pwError}
-                        />
-                    </div>
-                    <div className="input-form" >
-                        <TextField
-                            id="filled-password-input"
-                            label="Confirm Password"
-                            className=""
-                            type="password"
-                            name="pw2"
-                            autoComplete="new-password"
-                            margin="normal"
-                            variant="filled"
-                            onChange = {this.handleChange}
-                            value = {this.state.pw2}
-                            helperText={this.state.pw2Error}
-                        />
-                    </div>
-                    <Button variant="contained" color="primary" className="button-register" type="submit">
-                        Primary
-                    </Button>
-                    <Link to="login">
-                        <p>Login</p>
-                    </Link>
-                </form>
-            </div>
+            <Form onSubmit={this.handleSubmit} className="register-form">
+                <Form.Item>
+
+                    <Input
+                        name="un"
+                        value = {this.state.un}
+                        onChange={this.handleChange}
+                        prefix={<Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />}
+                        placeholder="Username"
+                    />
+
+                </Form.Item>
+                <Form.Item>
+
+                    <Input
+                        name="pw"
+                        value = {this.state.pw}
+                        onChange={this.handleChange}
+                        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
+                        type="password"
+                        placeholder="Password"
+                    />
+
+                </Form.Item>
+                <Form.Item>
+
+                    <Input
+                        name="pw2"
+                        value = {this.state.pw2}
+                        onChange={this.handleChange}
+                        prefix={<Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />}
+                        type="password"
+                        placeholder="Confirm Password"
+                    />
+
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        className="login-form-button"
+                        loading={this.state.loading}
+                    >
+                        {!this.state.loading ? <Icon type="login" /> : ""}
+                        Submit
+          </Button>
+                    Or <Link to="/login">Login now!</Link>
+                </Form.Item>
+            </Form>
         );
     }
 }

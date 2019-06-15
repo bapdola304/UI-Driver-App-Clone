@@ -13,25 +13,32 @@ class Content extends Component {
     }
 
     componentDidMount(){
-       setTimeout(() =>{
+        console.log(this.props.arrfile);
+        
+     if(this.props.arrfile.arrFiles.length > 0){
+         console.log('falsae');
+         
         this.setState({
             loading : false
         });
-       },1000)
+     }     
     }
- 
+    componentDidUpdate(props){
+        console.log(props);
+        
+    }
     render() {
         let {arrfile} = this.props;
-        console.log(arrfile);
+        console.log(arrfile.arrFiles);
         
         return (
             <Spin size="large" spinning={this.state.loading}>
                 <div className="container-fluid">
 
-                <ContentHead countItem = {arrfile.length} userInfor = {this.props.userInfor} />
+                <ContentHead countItem = {arrfile.arrFiles} userInfor = {this.props.userInfor} />
         
                 <div className="row" style ={{height : '480px', overflow : 'auto'}}>
-                    {arrfile.map((file,index) =>
+                    {arrfile.arrFiles.map((file,index) =>
                         <ContentItem 
                             key = {index}
                             file = {file}
@@ -48,7 +55,7 @@ class Content extends Component {
 }
 const mapStateToProps = state =>{
     return {
-        arrfile : state.listFile.arrFiles
+        arrfile : state.listFile
     }
 }
 export default connect(mapStateToProps, null)(Content);

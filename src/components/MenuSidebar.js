@@ -1,28 +1,47 @@
 import React, { Component } from 'react';
 import { FilePond } from "react-filepond";
-
-import axios from 'axios'
 import "filepond/dist/filepond.min.css";
-import Button from '@material-ui/core/Button';
+// import Button from '@material-ui/core/Button';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { Link } from 'react-router-dom'
+import { message, Button } from 'antd';
+import { Link, withRouter } from 'react-router-dom'
 import { connect } from "react-redux";
 import { addFile } from "../actions/index";
-
+message.config({
+    top: 90,
+    duration: 2,
+    maxCount: 3,
+  });
 class MenuSidebar extends Component {
     constructor(props) {
         super(props);
         this.state = {
             files: [],
             showSuccess: false,
-            user: null
+            user: null,
+            loading: false
         }
     }
     componentWillReceiveProps(props) {
         this.setState({
-            user: props.userInfor.username
+            user : props.user.username
         })
+        if(props.status){
+            this.setState({
+                loading : false
+            },() =>{
+                message.success('Upload success!');
+            });
+        }
+    
     }
+    // componentDidUpdate(props){
+    //     if (this.props.uploadStatus) {
+    //         message.success('Upload success!');
+    //     }
+        
+    // }
+
     onGetFile = (files) => {
         this.setState({
             files: files.map(file => file.file)
@@ -31,6 +50,8 @@ class MenuSidebar extends Component {
 
     onUpload = () => {
         let { files } = this.state;
+        if(files.length === 0)
+            return message.error('Please choice file!');
         const dataFile = new FormData();
         for (const file of files) {
             dataFile.append('files', file, file.name);
@@ -40,20 +61,18 @@ class MenuSidebar extends Component {
         this.props.addFile(dataFile);
         this.setState({
             files: [],
-            showSuccess: true
+            loading: true
         });
     }
     onLogout = () => {
-        console.log('logout');
-        this.props.onLogout();
+        localStorage.removeItem('token');
+        this.props.history.push('/login')
 
     }
-    onConfirm = () => {
-        this.setState({
-            showSuccess: false
-        });
-    }
     render() {
+        console.log(this.props.user );
+        
+
         return (
             <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
                 <a className="sidebar-brand d-flex align-items-center justify-content-center" href="#">
@@ -86,13 +105,22 @@ class MenuSidebar extends Component {
                     maxFiles={5}
                     onupdatefiles={(fileItems) => this.onGetFile(fileItems)}
                 />
-                <Button variant="contained" color="default" className="button-upload" onClick={this.onUpload}>
+                {/* <Button variant="contained" color="default" className="button-upload" onClick={this.onUpload}>
                     Upload
-                </Button>
+                </Button> */}
+                <Button
+                    onClick={this.onUpload}
+                    type="default"
+                    htmlType="submit"
+                    className="login-form-button"
+                    loading={this.state.loading}
+                >
+                    Upload
+                         </Button>
                 <hr className="sidebar-divider" />
                 <div className="sidebar-heading">
                     Interface
-                        </div>
+                </div>
 
 
                 <li className="nav-item">
@@ -139,7 +167,8 @@ class MenuSidebar extends Component {
 }
 const mapStateToProps = state => {
     return {
-        userInfor: state.listFile.userInfor
+        user: state.listFile.userInfor,
+        status : state.listFile.status
     }
 }
-export default connect(mapStateToProps, { addFile })(MenuSidebar);
+export default connect(mapStateToProps, { addFile })(withRouter(MenuSidebar));
